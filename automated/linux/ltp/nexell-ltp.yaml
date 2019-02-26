@@ -1,0 +1,31 @@
+metadata:
+    name: ltp
+    format: "Lava-Test-Shell Test Definition 1.0"
+    description: "Run LTP test suite"
+    maintainer:
+        - seoji@nexell.co.kr
+    os:
+        - oe
+        - ubuntu
+    scope:
+        - functional
+    devices:
+        - all
+
+params:
+    ARTIFACTORIAL_URL: "http://192.168.1.20:9090/artifacts/team/nx-solution-team2/"
+    ARTIFACTORIAL_TOKEN: "e2e701c507849e1dfb243286d4e5dc5e"
+    OUTPUT: ""
+
+run:
+    # run kselftest script directly
+    steps:
+        - cd ./automated/linux/ltp/
+        - ./nexell-ltp.sh
+        - if [ -z "${OUTPUT}" ]; then OUTPUT="./output"; fi
+        - echo ${OUTPUT}
+        # Upload test output to artifactorial.
+        - tar caf "nexell-ltp-output.tar.xz" "${OUTPUT}"
+        - ../../utils/upload-to-artifactorial.sh -a "nexell-ltp-output.tar.xz" -u "${ARTIFACTORIAL_URL}" -t "${ARTIFACTORIAL_TOKEN}"
+        # Send test result to LAVA.
+        - ../../utils/send-to-lava.sh "${OUTPUT}/result.txt"
