@@ -37,7 +37,8 @@ initialize_adb() {
     set -x
     adb_debug_info
     adb start-server
-    timeout 600 adb wait-for-device || error_fatal "Device NOT found!"
+    # add device serial number
+    timeout 600 adb -s ${ANDROID_SERIAL} wait-for-device || error_fatal "Device NOT found!"
     adb devices
 
     if [ -z "${ANDROID_SERIAL}" ]; then
@@ -53,7 +54,7 @@ initialize_adb() {
     export ANDROID_SERIAL
     info_msg "Default adb device: ${ANDROID_SERIAL}"
 
-    if adb shell echo "Testing adb connectivity"; then
+    if adb -s ${ANDROID_SERIAL} shell echo "Testing adb connectivity"; then
         info_msg "Connected to device ${ANDROID_SERIAL} successfully"
     else
         error_msg "Unable to connect to device ${ANDROID_SERIAL}"
@@ -66,8 +67,8 @@ adb_root() {
     if [ "$(adb shell whoami)" = "root" ]; then
         echo "DUT already has adbd running as root"
     else
-        adb root
-        timeout 600 adb wait-for-device || error_msg "Device NOT found!"
+        adb -s ${ANDROID_SERIAL} root
+        timeout 600 adb -s ${ANDROID_SERIAL} wait-for-device || error_msg "Device NOT found!"
         adb devices
         # After adb root, device number within the USB bus changes.
         adb_debug_info
