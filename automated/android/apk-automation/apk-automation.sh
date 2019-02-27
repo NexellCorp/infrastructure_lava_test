@@ -54,4 +54,3 @@ disable_suspend
 
 info_msg "device-${ANDROID_SERIAL}: About to run ${TEST_NAME}..."
 python main.py -l "${LOOPS}" -n "${TEST_NAME}" -d "${APK_DIR}" -u "${BASE_URL}" -s "${ANDROID_SERIAL}"
-
